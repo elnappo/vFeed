@@ -3,7 +3,9 @@
 # This file is part of vFeed Correlated Threat & Vulnerability Community Database API Parser - http://www.toolswatch.org
 # See the file 'LICENSE' for copying permission.
 
+from __future__ import print_function
 import json
+
 from config.constants import title, author, build, repository, twitter, db
 from lib.common.database import Database
 from lib.common.utils import check_env, move_export
@@ -94,8 +96,8 @@ class ExportJson(object):
             'Exploits': {'Metasploit': msf, 'Saint': saint, 'ExploitDB': edb, 'Elliot D2': elliot},
             'Rules': {'Snort': snort, 'Suricata': suricata}}
 
-        print "[+] Exporting to JSON file %s" % self.json_file
+        print("[+] Exporting to JSON file %s" % self.json_file)
         move_export(json_export, self.json_file)
-        print "[!] %s moved to export repository" % self.json_file
+        print("[!] %s moved to export repository" % self.json_file)
 
         return json.dumps(json_export, indent=4, sort_keys=True)

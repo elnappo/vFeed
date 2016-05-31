@@ -4,6 +4,7 @@
 # See the file 'LICENSE' for copying permission.
 
 import json
+
 from config.constants import nmap_url, oval_url
 from lib.common.database import Database
 
@@ -67,7 +68,11 @@ class CveScanners(object):
         self.cur.execute(
             'SELECT * FROM map_cve_oval WHERE cveid=?', self.query)
         for self.data in self.cur.fetchall():
-            item = {'id': self.data[0], 'class': self.data[1], 'title': self.data[2].encode('ascii', 'ignore'),
+            title = self.data[2]
+            if not isinstance(title, str):
+                title = title.encode('ascii', 'ignore')
+
+            item = {'id': self.data[0], 'class': self.data[1], 'title': title,
                     'url': oval_url + self.data[0]}
             self.oval.append(item)
 

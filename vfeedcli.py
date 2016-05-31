@@ -3,6 +3,8 @@
 # This file is part of vFeed Vulnerability Database Community API Parser - http://www.toolswatch.org
 # See the file 'LICENSE' for copying permission.
 
+from __future__ import print_function
+
 try:
     import sys
     import argparse
@@ -13,8 +15,8 @@ try:
     from lib.migration.mongo import Migrate
     from config.constants import build, title
     from lib.common.utils import enum_classes
-except ImportError, e:
-    print("[!] Missing a dependency:"), str(e)
+except ImportError as e:
+    print("[!] Missing a dependency:", str(e))
     sys.exit()
 
 if __name__ == "__main__":
@@ -48,9 +50,9 @@ if __name__ == "__main__":
         method_name = args.stats[0]
         if method_name == "get_stats" or method_name == "get_latest":
             result = getattr(Stats(), method_name)
-            print result()
+            print(result())
         else:
-            print"[!] Unknown Method"
+            print("[!] Unknown Method")
     elif args.list:
         enum_classes("list", "")
     elif args.method or args.export:
@@ -58,11 +60,11 @@ if __name__ == "__main__":
             method_name = args.method[0]
             cve_id = args.method[1]
             result = enum_classes(method_name, cve_id)
-            print result
+            print(result)
         else:
             method_name = args.export[0]
             if method_name == "xml_dump" or method_name == "json_dump":
                 cve_id = args.export[1]
                 enum_classes(method_name, cve_id)
             else:
-                print"[!] Unknown Method"
+                print("[!] Unknown Method")

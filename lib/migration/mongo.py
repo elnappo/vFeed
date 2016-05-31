@@ -4,10 +4,12 @@
 # See the file 'LICENSE' for copying permission.
 # Original code by Ushan89 https://github.com/ushan89/vFeed
 # Modified to Class by NJ Ouchn
+
+from __future__ import print_function
 import glob
-import subprocess
 import sys
-import commands
+import subprocess
+
 from config.constants import migration_dir
 from config.constants import mongo_conf
 from config.constants import migration_script
@@ -41,9 +43,9 @@ class Migrate(object):
         """ check whether the MongoDB is up and running
         :return: exit if server is not up
         """
-        self.output = commands.getoutput('ps -A')
+        self.output = subprocess.getoutput('ps -A')
         if 'mongod' not in self.output:
-            print '[!] MongoDB is not running. Start the mongod service'
+            print('[!] MongoDB is not running. Start the mongod service')
             sys.exit()
         return
 
@@ -66,7 +68,7 @@ class Migrate(object):
         for csv_file in glob.glob(self.csv_dir + '*.csv'):
             self.table_name = csv_file.split('\\') if '\\' in csv_file else csv_file.split('/')
             self.table_name = self.table_name[len(self.table_name) - 1].replace('.csv', '')
-            print "processing ..", self.table_name
+            print("processing ..", self.table_name)
             try:
                 subprocess.check_call([
                     'mongoimport',
@@ -82,7 +84,7 @@ class Migrate(object):
                     csv_file,
                     '--headerline'
                 ])
-            except Exception, e:
-                print '[Warning] Caught an exception', e
+            except Exception as e:
+                print('[Warning] Caught an exception', e)
 
-            print("[+] Imported collection: {} --> vFeed MongoDB".format(self.table_name))
+            print(("[+] Imported collection: {} --> vFeed MongoDB".format(self.table_name)))

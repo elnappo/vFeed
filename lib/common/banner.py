@@ -4,6 +4,8 @@
 # This file is part of vFeed Correlated Threat & Vulnerability Community Database API Parser - http://www.toolswatch.org
 # See the file 'LICENSE' for copying permission.
 
+from __future__ import print_function
+
 
 def banner():
     tag1 = ("""
@@ -47,5 +49,5 @@ def banner():
                                                       |___/
 
 """)
-    print tag1
-    print tag2
+    print(tag1)
+    print(tag2)

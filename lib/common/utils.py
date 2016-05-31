@@ -3,11 +3,13 @@
 # This file is part of vFeed Correlated Threat & Vulnerability Community Database API Parser - http://www.toolswatch.org
 # See the file 'LICENSE' for copying permission.
 
+from __future__ import print_function
 import inspect
 import os
 import hashlib
 import json
 import shutil
+
 from config.constants import export_dir
 
 
@@ -18,7 +20,7 @@ def check_env(file):
     :return:
     """
     if not os.path.isfile(file):
-        print "WARNING - " + file + ' is missing.'
+        print("WARNING - " + file + ' is missing.')
         return False
 
 
@@ -40,14 +42,14 @@ def enum_classes(method_name, cve_id):
     for my_class in classes:
         if method_name == "list":
             # Sanitize the class name.
-            print "Methods related to Class:", \
+            print("Methods related to Class:", \
                 str(my_class).replace("class", "").replace("<", "").replace(">", "").split(".")[
-                    4].replace("'", "")
+                    4].replace("'", ""))
             method_found = True
         for function in enum_functions(my_class):
             if method_name == "list":
                 if "__" not in function:
-                    print '\t|-->', function
+                    print('\t|-->', function)
             else:
                 if method_name == function:
                     result = getattr(my_class(cve_id), method_name)
@@ -83,6 +85,7 @@ def move_export(json_export, json_file):
     shutil.move(json_file, export_dir)
 
     return
+
 
 def checksum(checked_file):
     """

@@ -2,13 +2,21 @@
 # Copyright (C) 2016 ToolsWatch.org
 # This file is part of vFeed Correlated Threat & Vulnerability Community Database API Parser - http://www.toolswatch.org
 # See the file 'LICENSE' for copying permission.
+
+from __future__ import print_function
 import os
 import sys
-import urllib2
 import time
 import tarfile
+
 from config.constants import db, db_compressed, url, url_test, update_status, license_file
 from lib.common.utils import checksum
+
+try:
+    from urllib.request import urlopen
+    from urllib.error import URLError
+except ImportError:
+    from urllib2 import urlopen, URLError
 
 
 class Update(object):
@@ -31,23 +39,27 @@ class Update(object):
         :return:
         """
 
-        print (" ########################################### ")
-        print (" !!! Please Read Carefully the License  !!! ")
-        print (" ########################################### ")
+        print(" ########################################### ")
+        print(" !!! Please Read Carefully the License  !!! ")
+        print(" ########################################### ")
         time.sleep(3)
         self.license = open(self.license_file)
-        print self.license.read()
+        print(self.license.read())
         while True:
-            try:
-                choice = raw_input("vFeed License Acceptance (yes/no):").lower()
+            if sys.version_info[0] >= 3:
+                get_input = input
+            else:
+                get_input = raw_input
 
+            try:
+                choice = get_input("vFeed License Acceptance (yes/no):").lower()
             except KeyboardInterrupt:
                 sys.exit()
 
             if choice.lower() in ('yes', 'y'):
                 return True
             elif choice.lower() in ('no', 'n'):
-                print "License not accepted. Exiting program."
+                print("License not accepted. Exiting program.")
                 sys.exit()
 
     def update(self):
@@ -56,21 +68,21 @@ class Update(object):
         :return:
         """
 
-        print "[+] Checking connectivity to", self.db_url
+        print("[+] Checking connectivity to", self.db_url)
         try:
-            if urllib2.urlopen(self.url_test):
+            if urlopen(self.url_test):
                 if not os.path.isfile(self.db):
-                    print "[+] New install. Downloading the Correlated Vulnerability Database."
+                    print("[+] New install. Downloading the Correlated Vulnerability Database.")
                     self.download(self.remote_db)
-                    print '\n[+] Installing %s ...' % self.db_compressed
+                    print('\n[+] Installing %s ...' % self.db_compressed)
                     self.uncompress()
                     self.clean()
                     sys.exit(1)
                 if os.path.isfile(self.db):
-                    print "[+] Checking for the latest vFeed Vulnerability Database"
+                    print("[+] Checking for the latest vFeed Vulnerability Database")
                     self.check_status()
-        except urllib2.URLError as e:
-            print "[!] Connection error: ", e.reason
+        except URLError as e:
+            print("[!] Connection error: ", e.reason)
             sys.exit()
 
     def download(self, url):
@@ -82,10 +94,10 @@ class Update(object):
         """
 
         self.filename = url.split('/')[-1]
-        self.u = urllib2.urlopen(url)
+        self.u = urlopen(url)
         self.f = open(self.filename, 'wb')
         self.meta = self.u.info()
-        self.filesize = int(self.meta.getheaders("Content-Length")[0])
+        self.filesize = int(self.u.headers['Content-Length'])
         self.filesize_dl = 0
         self.block_sz = 8192
         while True:
@@ -110,13 +122,13 @@ class Update(object):
         """
 
         if not os.path.isfile(self.db_compressed):
-            print '[error] ' + self.db_compressed + ' not found'
+            print('[error] ' + self.db_compressed + ' not found')
             sys.exit()
         try:
             self.tar = tarfile.open(self.db_compressed, 'r:gz')
             self.tar.extractall('.')
-        except Exception, e:
-            print '[error] Database not extracted ', e
+        except Exception as e:
+            print('[error] Database not extracted ', e)
 
     def check_status(self):
         """ Check the remote update status and
@@ -129,24 +141,24 @@ class Update(object):
             self.hashRemote = self.output.split(',')[1]
 
         if self.hashRemote != self.hashLocal:
-            print '\n[+] Downloading the recent vFeed Vulnerability Database update'
+            print('\n[+] Downloading the recent vFeed Vulnerability Database update')
             self.download(self.remote_db)
-            print '\n[+] Decompressing %s ' % self.db_compressed
+            print('\n[+] Decompressing %s ' % self.db_compressed)
             self.uncompress()
 
         if self.hashRemote == self.hashLocal:
-            print '\n[+] You have the latest %s Vulnerability Database' % self.db
+            print('\n[+] You have the latest %s Vulnerability Database' % self.db)
 
         self.clean()
 
     def clean(self):
         """ Clean the tgz, update.dat temporary file and move database to repository
         """
-        print '[+] Cleaning compressed database and update file'
+        print('[+] Cleaning compressed database and update file')
         try:
             if os.path.isfile(self.db_compressed):
                 os.remove(self.db_compressed)
             if os.path.isfile(self.db_update):
                 os.remove(self.db_update)
-        except Exception, e:
-            print '[!] Already cleaned', e
+        except Exception as e:
+            print('[!] Already cleaned', e)
