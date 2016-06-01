@@ -20,7 +20,8 @@ except ImportError:
 
 
 class Update(object):
-    def __init__(self):
+    def __init__(self, interactive=True):
+        self.interactive = interactive
         self.db = db
         self.db_compressed = db_compressed
         self.url_test = url_test
@@ -38,6 +39,9 @@ class Update(object):
         Please read carefully to avoid any violation
         :return:
         """
+
+        if not self.interactive:
+            return True
 
         print(" ########################################### ")
         print(" !!! Please Read Carefully the License  !!! ")

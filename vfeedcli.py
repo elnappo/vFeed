@@ -33,6 +33,8 @@ if __name__ == "__main__":
                         help="View the vFeed Database statistics", nargs=1)
     parser.add_argument("-u", "--update", help="Update the Vulnerability and Threat Database", action="store_true",
                         required=False)
+    parser.add_argument("--acceptlicence", help="Accept and skip licence prompt", action="store_true", default=True,
+                        required=False)
     parser.add_argument("--list", help="Enumerate the list of available methods", action="store_true", required=False)
     parser.add_argument("--banner", help="Print vFeed banner", action="store_true", required=False)
     parser.add_argument("--migrate", help="Migration to MongoDB", action="store_true", required=False)
@@ -41,7 +43,7 @@ if __name__ == "__main__":
     if args.search:
         Search(args.search)
     elif args.update:
-        Update().update()
+        Update(interactive=args.acceptlicence).update()
     elif args.banner:
         banner()
     elif args.migrate:
